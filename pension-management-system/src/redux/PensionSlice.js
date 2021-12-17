@@ -24,7 +24,7 @@ const PensionSlice = createSlice({
 
         getPensionById: (state, action) => {
             console.log('pensionSlice reducers getPensionById');
-            state.empState = action.payload;
+            state.pensionState = action.payload;
         },
         postAddPension: (state, action) => {
             console.log('PensionSlice reducers addPension ');

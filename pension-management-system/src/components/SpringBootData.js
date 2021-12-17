@@ -8,9 +8,19 @@ const SpringBootData = () => {
 
     // state - for the component 
     const [pension, setPension] = useState(new Pension());
+    const [deletePension, setDeletePension] = useState(new Pension());
     const [newPensionObj, setNewPensionObj] = useState(new Pension());
     const [displayPensionObj, setDisplayPensionObj] = useState(new Pension());
    // const [empList, setEmpList] = useState([]);
+
+   //const [pensioner_id, setPensioner_id] = useState('');
+   // const dispatch = useDispatch();
+    //const pensionDataFromStore = useSelector((state) => state.pension.pensionerState);
+    //const [newPensionObj, setNewPensionObj] = useState(new Pension());
+  //  const [displayPensionObj, setDisplayPensionObj] = useState(new Pension());
+    const [updatePensionDetails, setUpdatePensionDetails] = useState({ amount: '', charges: '', bankType: "", statusCode: "" });
+   // const [displayUpdatePensionDetails, setDisplayUpdatePensionDetails] = useState(new Pension());
+    //const pensionList = useSelector((state) => state.pension.pensionList);
 
     const handlePension = (e) => {
         setPension({
@@ -18,6 +28,14 @@ const SpringBootData = () => {
             [e.target.name]: e.target.value
         });
     }
+
+    const handleDeletePension = (e) => {
+        setDeletePension({
+           
+            [e.target.name]: e.target.value
+        });
+    }
+
     const handleAddPension = (e) => {
         console.log(e.target.value);
         setNewPensionObj({
@@ -25,6 +43,14 @@ const SpringBootData = () => {
             [e.target.name]: e.target.value
         });
     }
+
+    const handleUpdatePension = (e) => {
+        console.log(e.target.value);
+        setUpdatePensionDetails({
+            ...updatePensionDetails,
+            [e.target.name]: e.target.value
+        });
+    };
 
     const submitAddPension = (evt) => {
         evt.preventDefault();
@@ -49,8 +75,35 @@ const SpringBootData = () => {
                 setPension({});
                 alert("Pension Details not found.");
             });
-        // evt.preventDefault();
+        evt.preventDefault();
     }
+
+   const submitDeletePensionById=(evt) =>{
+        console.log(deletePension.pensioner_id);
+        axios.get(`http://localhost:8082/deletepensionbyid/${deletePension.pensioner_id}`)
+            .then((response) => {
+                setDeletePension(response.data);
+                alert('pension details deleted successfully.');
+            })
+            .catch(() => {
+                setDeletePension({});
+                alert("Pension Details not found.");
+            });
+        evt.preventDefault();
+    }
+
+    const submitUpdatePension = (evt) => {
+        evt.preventDefault();
+        axios.post(`http://localhost:8082/updatepension`, updatePensionDetails)
+            .then((response) => {
+                setUpdatePensionDetails(response.data);
+                alert('Pension Details  updated successfully.');
+                setNewPensionObj({ pensioner_id: '', amount: '', charges:"", bankType:"", statusCode:""})
+            })
+            .catch(() => {
+                alert("Pensioner could not be updated.");
+            });
+    };
 
     return (
         <div style={{
@@ -120,6 +173,13 @@ const SpringBootData = () => {
             <input type="submit" name="Find Pension" onClick={submitGetPensionById} />
             <p className="text-primary">{pension.pensioner_id} {pension.amount} {pension.charges} {pension.bankType} {pension.statusCode} </p>
             
+            <p>----------------</p>
+            <p className="display-4 text-primary mt-3">Spring Boot Data</p>
+            <p>Delete Pension Details By Id</p>
+            <input type="number" id="pensioner_id" name="pensioner_id" value={deletePension.pensioner_id} onChange={handleDeletePension} placeholder="Enter pensioner_id to delete" />
+            <input type="submit" name="Delete Pension" onClick={submitDeletePensionById} />
+            <p className="text-primary">{deletePension.pensioner_id} {deletePension.amount} {deletePension.charges} {deletePension.bankType} {deletePension.statusCode} </p>
+
         </div>
     );
 }
